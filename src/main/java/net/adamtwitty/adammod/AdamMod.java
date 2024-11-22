@@ -17,9 +17,7 @@ import org.slf4j.Logger;
 @Mod(AdamMod.MOD_ID)
 public class AdamMod
 {
-    // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "adammod";
-    // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public AdamMod(FMLJavaModLoadingContext context)
