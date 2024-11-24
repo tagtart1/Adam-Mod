@@ -47,6 +47,7 @@ public class AdamMod
     {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.CARMELO_COIN);
+            event.accept(ModItems.SAPPHIRE);
         }
     }
 

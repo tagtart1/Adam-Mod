@@ -12,6 +12,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> CARMELO_COIN = ITEMS.register("carmelocoin", () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> SAPPHIRE = ITEMS.register("sapphire", () -> new Item(new Item.Properties()));
+
 
     public static void register (IEventBus eventBus) {
         ITEMS.register(eventBus);
