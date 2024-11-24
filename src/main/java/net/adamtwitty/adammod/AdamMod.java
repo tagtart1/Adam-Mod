@@ -1,6 +1,8 @@
 package net.adamtwitty.adammod;
 
 import com.mojang.logging.LogUtils;
+import net.adamtwitty.adammod.item.ModItems;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -23,6 +25,7 @@ public class AdamMod
     public AdamMod(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
+        ModItems.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -42,7 +45,9 @@ public class AdamMod
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.CARMELO_COIN);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
