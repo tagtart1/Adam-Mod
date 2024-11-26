@@ -6,6 +6,7 @@
   "block.adammod.sapphire_block": "Block of Sapphire",
   "block.adammod.raw_sapphire_block": "Block of Raw Sapphire",
   "block.adammod.sapphire_ore": "Sapphire Ore",
+  "item.adammod.metal_detector": "Metal Detector",
 
   "creativetab.adam_mod_tab": "Adam Mod"
 }
