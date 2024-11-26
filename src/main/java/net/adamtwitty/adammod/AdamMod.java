@@ -1,7 +1,10 @@
 package net.adamtwitty.adammod;
 
 import com.mojang.logging.LogUtils;
+import net.adamtwitty.adammod.block.ModBlocks;
+import net.adamtwitty.adammod.item.ModCreativeModTabs;
 import net.adamtwitty.adammod.item.ModItems;
+import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,6 +18,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(AdamMod.MOD_ID)
 public class AdamMod
@@ -25,8 +29,10 @@ public class AdamMod
     public AdamMod(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
-        ModItems.register(modEventBus);
 
+        ModCreativeModTabs.register(modEventBus);
+        ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in
@@ -48,8 +54,11 @@ public class AdamMod
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.CARMELO_COIN);
             event.accept(ModItems.SAPPHIRE);
+            event.accept(ModItems.RAW_SAPPHIRE);
         }
     }
+
+
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
