@@ -1,5 +1,6 @@
 package net.adamtwitty.adammod.item.custom;
 
+import net.adamtwitty.adammod.util.UtilFunctions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -59,7 +60,7 @@ public class EnchantedBookItem extends Item {
 
         Component translatable = Component.translatable("enchantment.minecraft.fortune.description");
         String resolvedText = translatable.getString();
-        List<String> splitText = wrapText(resolvedText, maxWidthTooltip);
+        List<String> splitText = UtilFunctions.wrapText(resolvedText, maxWidthTooltip);
           for (String line : splitText) {
               pTooltipComponents.add(Component.literal(line.trim()));
           }
@@ -110,28 +111,6 @@ public class EnchantedBookItem extends Item {
             return false;
         }
     }
-    // TO-DO MOVE THIS TO A UTIL
-    // Utility method to wrap text into lines
-    private List<String> wrapText(String text, int maxWidth) {
-        List<String> lines = new ArrayList<>();
-        StringBuilder currentLine = new StringBuilder();
-        Font font = Minecraft.getInstance().font; // Get the Minecraft font renderer
 
-        for (String word : text.split(" ")) {
-            // Check if adding the next word exceeds the maxWidth
-            if (font.width(currentLine + word) > maxWidth) {
-                lines.add(currentLine.toString()); // Add the current line to the list
-                currentLine = new StringBuilder(); // Start a new line
-            }
-            currentLine.append(word).append(" ");
-        }
-
-        // Add the last line if it exists
-        if (!currentLine.isEmpty()) {
-            lines.add(currentLine.toString().trim());
-        }
-
-        return lines;
-    }
 
 }
