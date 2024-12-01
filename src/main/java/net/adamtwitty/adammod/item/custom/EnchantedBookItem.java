@@ -53,18 +53,19 @@ public class EnchantedBookItem extends Item {
         String enchantmentSource = enchantmentInfo[0];
         String enchantmentName = enchantmentInfo[1];
         Pair<String, ChatFormatting> enchantRarityInfo = getRarityInfo(enchantmentRaw);
-        int enchantmentLvl = enchantmentTag.getInt("lvl");
 
+        int enchantmentLvl = enchantmentTag.getInt("lvl");
         String romanLevel = Component.translatable("enchantment.level." + enchantmentLvl).getString();
 
         String enchantFormattedName = Component.translatable("enchantment." + enchantmentSource + "." + enchantmentName).getString();
         String rarityIcon = Component.translatable("enchantment.rarity." + enchantRarityInfo.getA()).getString();
 
-
-        return Component.literal(rarityIcon + " ").append(Component.literal(enchantFormattedName + " " + romanLevel).withStyle(enchantRarityInfo.getB()));
+        return Component.literal(rarityIcon + " ")
+                .append(Component.literal(enchantFormattedName + " " + romanLevel)
+                        .withStyle(enchantRarityInfo.getB()));
     }
 
-      @Override
+    @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         assert pStack.getTag() != null;
         int maxWidthTooltip = 165;
