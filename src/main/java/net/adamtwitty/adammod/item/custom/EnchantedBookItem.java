@@ -27,6 +27,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.internal.TextComponentMessageFormatHandler;
 import org.jetbrains.annotations.Nullable;
+import oshi.util.tuples.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -51,16 +52,16 @@ public class EnchantedBookItem extends Item {
         String[] enchantmentInfo = enchantmentRaw.split(":");
         String enchantmentSource = enchantmentInfo[0];
         String enchantmentName = enchantmentInfo[1];
-
+        Pair<String, ChatFormatting> enchantRarityInfo = getRarityInfo(enchantmentRaw);
         int enchantmentLvl = enchantmentTag.getInt("lvl");
 
-        Component romanLevel = Component.translatable("enchantment.level." + enchantmentLvl);
-        Component enchantFormattedName = Component.translatable("enchantment." + enchantmentSource + "." + enchantmentName);
+        String romanLevel = Component.translatable("enchantment.level." + enchantmentLvl).getString();
+
+        String enchantFormattedName = Component.translatable("enchantment." + enchantmentSource + "." + enchantmentName).getString();
+        String rarityIcon = Component.translatable("enchantment.rarity." + enchantRarityInfo.getA()).getString();
 
 
-
-        return Component.translatable("enchantment.rarity.elite")
-                .append(Component.literal(" Fortune II").setStyle(Style.EMPTY.withColor(ChatFormatting.AQUA)));
+        return Component.literal(rarityIcon + " " + enchantFormattedName + " " + romanLevel).withStyle(enchantRarityInfo.getB());
     }
 
       @Override
@@ -126,14 +127,18 @@ public class EnchantedBookItem extends Item {
         }
     }
 
-    private String getRarityName(String enchantmentRaw) {
+    private Pair<String, ChatFormatting> getRarityInfo(String enchantmentRaw) {
         if (AdamModCommonConfigs.SIMPLE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
-            return "simple";
+            return new Pair<>("simple", ChatFormatting.WHITE);
         } else if (AdamModCommonConfigs.ELITE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
-            return "elite";
+            return new Pair<>("elite", ChatFormatting.AQUA);
         } else if (AdamModCommonConfigs.UNIQUE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
-            return "unique";
+            return new Pair<>("unique", ChatFormatting.GREEN);
+        } else if (AdamModCommonConfigs.ULTIMATE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
+            return new Pair<>("ultimate", ChatFormatting.YELLOW);
+        } else if (AdamModCommonConfigs.LEGENDARY_ENCHANTMENTS.get().contains(enchantmentRaw)) {
+            return new Pair<>("legendary", ChatFormatting.GOLD);
         }
-        return "simple";
+        return new Pair<>("simple", ChatFormatting.WHITE);
     }
 }
