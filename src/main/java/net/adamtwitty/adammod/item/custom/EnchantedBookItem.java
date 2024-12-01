@@ -61,7 +61,7 @@ public class EnchantedBookItem extends Item {
         String rarityIcon = Component.translatable("enchantment.rarity." + enchantRarityInfo.getA()).getString();
 
 
-        return Component.literal(rarityIcon + " " + enchantFormattedName + " " + romanLevel).withStyle(enchantRarityInfo.getB());
+        return Component.literal(rarityIcon + " ").append(Component.literal(enchantFormattedName + " " + romanLevel).withStyle(enchantRarityInfo.getB()));
     }
 
       @Override
