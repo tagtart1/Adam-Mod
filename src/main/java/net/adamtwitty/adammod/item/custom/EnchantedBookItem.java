@@ -70,11 +70,13 @@ public class EnchantedBookItem extends Item {
         assert pStack.getTag() != null;
         int maxWidthTooltip = 165;
         int successRate = pStack.getTag().getInt("SuccessRate");
-
+        CompoundTag enchantmentTag = pStack.getTag().getCompound("Enchantment");
+        String enchantmentRaw = enchantmentTag.getString("id");
+        String[] enchantmentInfo = enchantmentRaw.split(":");
 
         pTooltipComponents.add(Component.literal(" "));
 
-        Component translatable = Component.translatable("enchantment.minecraft.fortune.description");
+        Component translatable = Component.translatable("enchantment." + enchantmentInfo[0] + "." + enchantmentInfo[1] + ".description");
         String resolvedText = translatable.getString();
         List<String> splitText = UtilFunctions.wrapText(resolvedText, maxWidthTooltip);
           for (String line : splitText) {
@@ -91,6 +93,8 @@ public class EnchantedBookItem extends Item {
           pTooltipComponents.add(Component.literal("→ ᴅʀᴀɢ ɴ ᴅʀᴏᴘ ᴏɴᴛᴏ ʏᴏᴜʀ").withStyle(ChatFormatting.GRAY));
           pTooltipComponents.add(Component.literal("ɪᴛᴇᴍ ᴛᴏ ᴀᴘᴘʟʏ ᴛʜɪꜱ ʙᴏᴏᴋ").withStyle(ChatFormatting.GRAY));
           pTooltipComponents.add(Component.literal(" "));
+
+
 
 
           pTooltipComponents.add(Component.translatable("enchantment.icon.pickaxe"));
@@ -119,7 +123,7 @@ public class EnchantedBookItem extends Item {
 
         if (pAction == ClickAction.PRIMARY && otherStack.isEnchantable()) {
             Map<Enchantment, Integer> enchants = pStack.getAllEnchantments();
-
+            pPlayer.sendSystemMessage(Component.literal("yo"));
             pStack.shrink(1);
             pPlayer.playSound(SoundEvents.PLAYER_LEVELUP);
             return true;
