@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "adammod:block/raw_sapphire_block"
-  }
-}

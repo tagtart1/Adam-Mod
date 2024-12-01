@@ -1,0 +1,137 @@
+package net.adamtwitty.adammod.item.custom;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.client.event.RenderItemInFrameEvent;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.internal.TextComponentMessageFormatHandler;
+import org.jetbrains.annotations.Nullable;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Consumer;
+
+public class EnchantedBookItem extends Item {
+    Random random = new Random();
+
+    public EnchantedBookItem(Properties pProperties) {
+
+        super(pProperties);
+    }
+
+    @Override
+    public Component getName(ItemStack pStack) {
+
+        return Component.translatable("enchantment.rarity.elite")
+                .append(Component.literal(" Fortune II").setStyle(Style.EMPTY.withColor(ChatFormatting.AQUA)));
+    }
+
+      @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        assert pStack.getTag() != null;
+        int maxWidthTooltip = 165;
+        int successRate = pStack.getTag().getInt("SuccessRate");
+
+
+        pTooltipComponents.add(Component.literal(" "));
+
+        Component translatable = Component.translatable("enchantment.minecraft.fortune.description");
+        String resolvedText = translatable.getString();
+        List<String> splitText = wrapText(resolvedText, maxWidthTooltip);
+          for (String line : splitText) {
+              pTooltipComponents.add(Component.literal(line.trim()));
+          }
+
+        pTooltipComponents.add(Component.literal(" "));
+
+        pTooltipComponents.add(Component.literal("Success Rate: ")
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GREEN))  // Green for "Success Rate: "
+                .append(Component.literal(successRate + "%")
+                        .setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE))));
+          pTooltipComponents.add(Component.literal(" "));
+          pTooltipComponents.add(Component.literal("→ ᴅʀᴀɢ ɴ ᴅʀᴏᴘ ᴏɴᴛᴏ ʏᴏᴜʀ").withStyle(ChatFormatting.GRAY));
+          pTooltipComponents.add(Component.literal("ɪᴛᴇᴍ ᴛᴏ ᴀᴘᴘʟʏ ᴛʜɪꜱ ʙᴏᴏᴋ").withStyle(ChatFormatting.GRAY));
+          pTooltipComponents.add(Component.literal(" "));
+
+
+          pTooltipComponents.add(Component.translatable("enchantment.icon.pickaxe"));
+    }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
+    public boolean isFoil(ItemStack pStack) {
+        return true;
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        super.initializeClient(consumer);
+    }
+
+    @Override
+    public boolean overrideStackedOnOther(ItemStack pStack, Slot pSlot, ClickAction pAction, Player pPlayer) {
+
+        ItemStack otherStack = pSlot.getItem();
+
+
+        if (pAction == ClickAction.PRIMARY && otherStack.isEnchantable()) {
+            Map<Enchantment, Integer> enchants = pStack.getAllEnchantments();
+
+            pStack.shrink(1);
+            pPlayer.playSound(SoundEvents.PLAYER_LEVELUP);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // TO-DO MOVE THIS TO A UTIL
+    // Utility method to wrap text into lines
+    private List<String> wrapText(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        StringBuilder currentLine = new StringBuilder();
+        Font font = Minecraft.getInstance().font; // Get the Minecraft font renderer
+
+        for (String word : text.split(" ")) {
+            // Check if adding the next word exceeds the maxWidth
+            if (font.width(currentLine + word) > maxWidth) {
+                lines.add(currentLine.toString()); // Add the current line to the list
+                currentLine = new StringBuilder(); // Start a new line
+            }
+            currentLine.append(word).append(" ");
+        }
+
+        // Add the last line if it exists
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine.toString().trim());
+        }
+
+        return lines;
+    }
+
+}
