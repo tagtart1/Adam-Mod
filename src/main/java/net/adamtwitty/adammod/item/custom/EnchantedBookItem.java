@@ -1,5 +1,6 @@
 package net.adamtwitty.adammod.item.custom;
 
+import net.adamtwitty.adammod.config.AdamModCommonConfigs;
 import net.adamtwitty.adammod.util.UtilFunctions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -44,6 +45,19 @@ public class EnchantedBookItem extends Item {
 
     @Override
     public Component getName(ItemStack pStack) {
+        CompoundTag rootTag = pStack.getTag();
+        CompoundTag enchantmentTag = rootTag.getCompound("Enchantment");
+        String enchantmentRaw = enchantmentTag.getString("id");
+        String[] enchantmentInfo = enchantmentRaw.split(":");
+        String enchantmentSource = enchantmentInfo[0];
+        String enchantmentName = enchantmentInfo[1];
+
+        int enchantmentLvl = enchantmentTag.getInt("lvl");
+
+        Component romanLevel = Component.translatable("enchantment.level." + enchantmentLvl);
+        Component enchantFormattedName = Component.translatable("enchantment." + enchantmentSource + "." + enchantmentName);
+
+
 
         return Component.translatable("enchantment.rarity.elite")
                 .append(Component.literal(" Fortune II").setStyle(Style.EMPTY.withColor(ChatFormatting.AQUA)));
@@ -112,5 +126,14 @@ public class EnchantedBookItem extends Item {
         }
     }
 
-
+    private String getRarityName(String enchantmentRaw) {
+        if (AdamModCommonConfigs.SIMPLE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
+            return "simple";
+        } else if (AdamModCommonConfigs.ELITE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
+            return "elite";
+        } else if (AdamModCommonConfigs.UNIQUE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
+            return "unique";
+        }
+        return "simple";
+    }
 }

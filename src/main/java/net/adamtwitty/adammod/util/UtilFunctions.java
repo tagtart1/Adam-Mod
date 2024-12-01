@@ -30,4 +30,9 @@ public class UtilFunctions {
 
         return lines;
     }
+
+
+    public enum RomanNumeral {
+        ONE
+    }
 }

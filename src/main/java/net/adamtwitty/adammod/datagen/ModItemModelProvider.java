@@ -23,9 +23,12 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.CARMELO_COIN);
         simpleItem(ModItems.LARA_COIN);
         simpleItem(ModItems.METAL_DETECTOR);
-        dynamicItem(ModItems.ENCHANTED_BOOK);
-        textureOnly("elite");
+        bookItem(ModItems.ENCHANTED_BOOK);
         textureOnly("simple");
+        textureOnly("unique");
+        textureOnly("elite");
+        textureOnly("ultimate");
+        textureOnly("legendary");
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
@@ -42,7 +45,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
 
-    private ItemModelBuilder.OverrideBuilder dynamicItem(RegistryObject<Item> item) {
+    private ItemModelBuilder.OverrideBuilder bookItem(RegistryObject<Item> item) {
         return withExistingParent(item.getId().getPath(),
                 new ResourceLocation("item/generated"))
                 .texture("layer0", new ResourceLocation(AdamMod.MOD_ID, "item/" + "simple"))
@@ -52,8 +55,19 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .end()
                 .override()
                     .predicate(new ResourceLocation(AdamMod.MOD_ID, "book_rarity"),2)
-                    .model(new ModelFile.UncheckedModelFile(new ResourceLocation(AdamMod.MOD_ID, "item/elite")));
-
+                    .model(new ModelFile.UncheckedModelFile(new ResourceLocation(AdamMod.MOD_ID, "item/unique")))
+                .end()
+                .override()
+                    .predicate(new ResourceLocation(AdamMod.MOD_ID, "book_rarity"),3)
+                    .model(new ModelFile.UncheckedModelFile(new ResourceLocation(AdamMod.MOD_ID, "item/elite")))
+                .end()
+                .override()
+                    .predicate(new ResourceLocation(AdamMod.MOD_ID, "book_rarity"),4)
+                    .model(new ModelFile.UncheckedModelFile(new ResourceLocation(AdamMod.MOD_ID, "item/ultimate")))
+                .end()
+                .override()
+                    .predicate(new ResourceLocation(AdamMod.MOD_ID, "book_rarity"),5)
+                    .model(new ModelFile.UncheckedModelFile(new ResourceLocation(AdamMod.MOD_ID, "item/legendary")));
 
 
     }
