@@ -33,10 +33,8 @@ import org.jetbrains.annotations.Nullable;
 import oshi.util.tuples.Pair;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class EnchantedBookItem extends Item {
@@ -144,11 +142,44 @@ public class EnchantedBookItem extends Item {
     public boolean overrideStackedOnOther(ItemStack pStack, Slot pSlot, ClickAction pAction, Player pPlayer) {
 
         ItemStack otherStack = pSlot.getItem();
+        boolean canBeApplied = false;
+        if (pAction == ClickAction.PRIMARY && (otherStack.isEnchanted() || otherStack.isEnchantable())) {
+            CompoundTag enchantmentTag = pStack.getTag().getCompound("Enchantment");
+            int enchantmentLevel = enchantmentTag.getInt("lvl");
+            String enchantmentRaw = enchantmentTag.getString("id");
+            ResourceLocation resourceLocation = new ResourceLocation(enchantmentRaw);
+            Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(resourceLocation);
+            assert enchantment != null;
+            boolean canEnchantGeneral = enchantment.canEnchant(otherStack);
 
-        if (pAction == ClickAction.PRIMARY && otherStack.isEnchantable()) {
-            Map<Enchantment, Integer> enchants = pStack.getAllEnchantments();
-            pPlayer.sendSystemMessage(Component.literal("yo"));
-            pStack.shrink(1);
+            // canEnchant checks if the enchantment can go on that specific item generally speaking
+            //TODO - build out the error handling in matt-mods,
+            // EnchantmentHelper is nice but doesnt give you room for specific errors
+            // its Itemstack.enchant method is good. isEnchantmentCompatible lacks specific errors
+            //
+
+            if (canEnchantGeneral && !otherStack.isEnchanted()) {
+                // No enchantments on the other item so it can be applied
+                canBeApplied = true;
+                otherStack.enchant(enchantment, enchantmentLevel);
+                pPlayer.playSound(SoundEvents.PLAYER_LEVELUP);
+                // pStack.shrink(1);
+            } else if (canEnchantGeneral) {
+                // Loop through each of the otherStacks enchant and make sure they are compatible with the incoming enchant
+                Collection<Enchantment> enchants = EnchantmentHelper.getEnchantments(otherStack).keySet();
+                boolean isCompatible = EnchantmentHelper.isEnchantmentCompatible(enchants, enchantment);
+                if (isCompatible) {
+                    canBeApplied = true;
+                    pPlayer.playSound(SoundEvents.PLAYER_LEVELUP);
+
+                } else {
+                    canBeApplied = false;
+                }
+            }
+            pPlayer.sendSystemMessage(Component.literal("Can be applied: " + canBeApplied));
+
+
+
             pPlayer.playSound(SoundEvents.PLAYER_LEVELUP);
             return true;
         } else {
@@ -158,7 +189,7 @@ public class EnchantedBookItem extends Item {
 
     private Pair<String, ChatFormatting> getRarityInfo(String enchantmentRaw) {
         if (AdamModCommonConfigs.SIMPLE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
-            return new Pair<>("simple", ChatFormatting.DARK_GRAY);
+            return new Pair<>("simple", ChatFormatting.GRAY);
         } else if (AdamModCommonConfigs.ELITE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
             return new Pair<>("elite", ChatFormatting.AQUA);
         } else if (AdamModCommonConfigs.UNIQUE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
@@ -168,7 +199,7 @@ public class EnchantedBookItem extends Item {
         } else if (AdamModCommonConfigs.LEGENDARY_ENCHANTMENTS.get().contains(enchantmentRaw)) {
             return new Pair<>("legendary", ChatFormatting.GOLD);
         }
-        return new Pair<>("simple", ChatFormatting.DARK_GRAY);
+        return new Pair<>("simple", ChatFormatting.GRAY);
     }
 
 
