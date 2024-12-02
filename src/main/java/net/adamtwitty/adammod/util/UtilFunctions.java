@@ -2,6 +2,10 @@ package net.adamtwitty.adammod.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +36,15 @@ public class UtilFunctions {
     }
 
 
-    public enum RomanNumeral {
-        ONE
+    public static ItemStack getItemStackFromString(String itemName) {
+        ResourceLocation itemResource = new ResourceLocation(itemName);
+
+        Item item = ForgeRegistries.ITEMS.getValue(itemResource);
+
+        if (item == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return new ItemStack(item);
     }
 }

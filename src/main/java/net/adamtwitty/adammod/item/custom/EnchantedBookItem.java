@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -26,6 +28,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.internal.TextComponentMessageFormatHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import oshi.util.tuples.Pair;
 
@@ -38,6 +41,24 @@ import java.util.function.Consumer;
 
 public class EnchantedBookItem extends Item {
     Random random = new Random();
+
+    // Holds the item names for each icon on the tooltip
+    private String[] baseIconItems = {
+            "minecraft:iron_helmet",
+            "minecraft:iron_chestplate",
+            "minecraft:iron_leggings",
+            "minecraft:iron_boots",
+            "minecraft:iron_pickaxe",
+            "minecraft:iron_axe",
+            "minecraft:iron_shovel",
+            "minecraft:iron_hoe",
+            "minecraft:iron_sword",
+            "minecraft:fishing_rod",
+            "minecraft:trident",
+            "minecraft:shield",
+            "minecraft:crossbow",
+            "minecraft:elytra",
+    };
 
     public EnchantedBookItem(Properties pProperties) {
 
@@ -95,9 +116,13 @@ public class EnchantedBookItem extends Item {
           pTooltipComponents.add(Component.literal(" "));
 
 
+            ResourceLocation resourceLocation = new ResourceLocation(enchantmentRaw);
+            Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(resourceLocation);
 
+            assert enchantment != null;
 
-          pTooltipComponents.add(Component.translatable("enchantment.icon.pickaxe"));
+            pTooltipComponents.add(getApplicableIcons(enchantment));
+
     }
 
     @Override
@@ -120,7 +145,6 @@ public class EnchantedBookItem extends Item {
 
         ItemStack otherStack = pSlot.getItem();
 
-
         if (pAction == ClickAction.PRIMARY && otherStack.isEnchantable()) {
             Map<Enchantment, Integer> enchants = pStack.getAllEnchantments();
             pPlayer.sendSystemMessage(Component.literal("yo"));
@@ -134,7 +158,7 @@ public class EnchantedBookItem extends Item {
 
     private Pair<String, ChatFormatting> getRarityInfo(String enchantmentRaw) {
         if (AdamModCommonConfigs.SIMPLE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
-            return new Pair<>("simple", ChatFormatting.WHITE);
+            return new Pair<>("simple", ChatFormatting.DARK_GRAY);
         } else if (AdamModCommonConfigs.ELITE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
             return new Pair<>("elite", ChatFormatting.AQUA);
         } else if (AdamModCommonConfigs.UNIQUE_ENCHANTMENTS.get().contains(enchantmentRaw)) {
@@ -144,6 +168,25 @@ public class EnchantedBookItem extends Item {
         } else if (AdamModCommonConfigs.LEGENDARY_ENCHANTMENTS.get().contains(enchantmentRaw)) {
             return new Pair<>("legendary", ChatFormatting.GOLD);
         }
-        return new Pair<>("simple", ChatFormatting.WHITE);
+        return new Pair<>("simple", ChatFormatting.DARK_GRAY);
+    }
+
+
+
+    Component getApplicableIcons(Enchantment enchantment) {
+        MutableComponent text = Component.translatable("");
+        for (String itemName : baseIconItems) {
+            ItemStack item = UtilFunctions.getItemStackFromString(itemName);
+            if (enchantment.canEnchant(item)) {
+                // Breaks up the itemname to only get the identify string for the icon
+               String[] itemNameParts = itemName.split("[:_]");
+                String coreName = itemNameParts[itemNameParts.length - 1];
+
+                // Get the icon png from the translatable
+                text.append(Component.translatable("enchantment.icon." +coreName));
+            }
+
+        }
+        return text;
     }
 }
